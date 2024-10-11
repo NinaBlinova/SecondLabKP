@@ -28,8 +28,6 @@ public class FirstVar {
                 double returnRef = calculateReferenceValue(Double.parseDouble(valueX.getText()));
                 referenceValue.setText(String.valueOf(returnRef));
                 double res = calculateFunctionValue(Double.parseDouble(valueX.getText()), selectedAccured.getPrecision());
-                System.out.println(res);
-                System.out.println(returnRef);
                 maclaurinRow.setText(String.valueOf(res));
             }
         });
@@ -88,8 +86,8 @@ public class FirstVar {
     }
 
 
-    public static int getFactorial(int f) {
-        int result = 1;
+    public static double getFactorial(int f) {
+        double result = 1;
 
         for (int i = 1; i <= f; i++) {
             result = result * i;
@@ -97,23 +95,39 @@ public class FirstVar {
         return result;
     }
 
+
+    public static double getPow(double x, int y) {
+        double res = 1;
+        for (int i = 1; i <= y; i++) {
+            res *= x;
+        }
+        return res;
+    }
+
+    static double maclorenNumerator(int n) {
+        return (getPow(-1, n) * getFactorial(2 * n));
+    }
+
+    static double maclorenDenominator(int n) {
+        return (1 - 2 * n) * getPow(getFactorial(n), 2) * getPow(4, n);
+    }
+
     static double macloren(int n, double x) {
-        return (Math.pow(-1, n) * getFactorial(2 * n) * Math.pow(x, n)) / ((1 - 2 * n) * getFactorial(n) * getFactorial(n) * Math.pow(4, n));
+        return (maclorenNumerator(n) / maclorenDenominator(n)) * getPow(x, n);
     }
 
     public static double calculateFunctionValue(double x, double epsilon) {
-        double resultM = 0;
-        int N = 0;
-        double fx = 1;
-        double fx0 = 0;
-        resultM += fx;
-        while (Math.abs(fx - fx0) > epsilon) {
-            fx0 = fx;
-            N++;
-            fx = macloren(N, x);
-            resultM += fx;
-        }
-        resultM += fx;
-        return resultM;
+        double result = 0;
+        int n = 0;
+        double fx;
+
+        do {
+            fx = macloren(n, x);
+            result += fx;
+            n++;
+            //System.out.println("n: " + n + ", term: " + fx + ", result: " + result);
+        } while (Math.abs(fx) > epsilon);
+
+        return result;
     }
 }

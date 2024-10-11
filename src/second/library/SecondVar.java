@@ -96,8 +96,8 @@ public class SecondVar {
         return Math.sqrt(1 + x);
     }
 
-    public static int getFactorial(int f) {
-        int result = 1;
+    public static double getFactorial(int f) {
+        double result = 1;
         for (int i = 1; i <= f; i++) {
             result *= i;
         }
@@ -109,13 +109,11 @@ public class SecondVar {
     }
 
     public static double calculateFunctionValue(double x, double epsilon) {
-        double fx0 = 0;
         double resultM = 0;
         int N = 0;
         double fx = macloren(N, x);
         resultM += fx;
-        while (Math.abs(fx - fx0) > Math.pow(10, -epsilon)) {
-            fx0 = fx;
+        while (Math.abs(fx) > Math.pow(10, -epsilon)) {
             N++;
             fx = macloren(N, x);
             resultM += fx;
