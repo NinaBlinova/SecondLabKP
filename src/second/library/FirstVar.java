@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import second.library.Calculate;
+
 public class FirstVar {
     public JPanel contentPane;
     private JTextField valueX;
@@ -23,23 +25,12 @@ public class FirstVar {
             public void actionPerformed(ActionEvent e) {
                 Accured selectedAccured = (Accured) accuranceValue.getSelectedItem();
                 assert selectedAccured != null;
-                String epsilon = String.valueOf(selectedAccured.getPrecision());
                 double returnRef = calculateReferenceValue(Double.parseDouble(valueX.getText()));
-                if (returnRef < 0) {
-                    valueX.setText("");
-                }
-                referenceValue.setText(String.format("%." + epsilon + "f", returnRef));
-
-                double resultM = 0;
-                int N = 0;
-                int epsiloM = (int) selectedAccured.getPrecision();
-                double term = Double.POSITIVE_INFINITY;
-                while (Math.abs(term) > Math.pow(10, -epsiloM)) {
-                    term = macloren(N, Double.parseDouble(valueX.getText()));
-                    resultM += term;
-                    N++;
-                }
-                maclaurinRow.setText(String.format("%." + epsilon + "f", resultM));
+                referenceValue.setText(String.valueOf(returnRef));
+                double res = calculateFunctionValue(Double.parseDouble(valueX.getText()), selectedAccured.getPrecision());
+                System.out.println(res);
+                System.out.println(returnRef);
+                maclaurinRow.setText(String.valueOf(res));
             }
         });
 
@@ -72,7 +63,7 @@ public class FirstVar {
             }
         });
         populateGenreComboBox();
-        valueX.setText("0.99999");
+        valueX.setText("0.5");
     }
 
 
@@ -97,16 +88,6 @@ public class FirstVar {
     }
 
 
-    private double calculateMaclaurinValue(double x) {
-        double result = 0;
-        if (x < 1 && x > -1) {
-            result = Math.sqrt(1 + x);
-        } else {
-            result = -1;
-        }
-        return result;
-    }
-
     public static int getFactorial(int f) {
         int result = 1;
 
@@ -117,11 +98,22 @@ public class FirstVar {
     }
 
     static double macloren(int n, double x) {
-        //return (Math.pow(-1, n) * getFactorial(2 * n)) / ((1 - 2 * n) * getFactorial(n) ^ 2 * 4 ^ n);
-        return ((Math.pow(-1, n) * getFactorial(2 * n)) / ((1 - 2 * n) * Math.pow(getFactorial(n), 2) * Math.pow(4, n))) * Math.pow(x, n);
+        return (Math.pow(-1, n) * getFactorial(2 * n) * Math.pow(x, n)) / ((1 - 2 * n) * getFactorial(n) * getFactorial(n) * Math.pow(4, n));
     }
 
-
-
-
+    public static double calculateFunctionValue(double x, double epsilon) {
+        double resultM = 0;
+        int N = 0;
+        double fx = 1;
+        double fx0 = 0;
+        resultM += fx;
+        while (Math.abs(fx - fx0) > epsilon) {
+            fx0 = fx;
+            N++;
+            fx = macloren(N, x);
+            resultM += fx;
+        }
+        resultM += fx;
+        return resultM;
+    }
 }

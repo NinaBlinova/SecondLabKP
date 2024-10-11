@@ -1,19 +1,19 @@
 package second.library;
 
 public enum Accured {
-    ONE(1),      // 1 число после запятой
-    TWO(2),      // 2 числа после запятой
-    THREE(3),    // 3 числа после запятой
-    TEN(10),     // 10 чисел после запятой
-    TWENTY(20);  // 20 чисел после запятой
+    ONE(0.1),      // 1 число после запятой
+    TWO(0.01),      // 2 числа после запятой
+    THREE(0.001),    // 3 числа после запятой
+    FIFTH(0.00001),     // 5 чисел после запятой
+    EIGHT(.00000001);  // 8 чисел после запятой
 
-    private int precision;
+    private double precision;
 
-    Accured(int precision) {
+    Accured(double precision) {
         this.precision = precision;
     }
 
-    public int getPrecision() {
+    public double getPrecision() {
         return precision;
     }
 }
