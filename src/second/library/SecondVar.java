@@ -40,19 +40,32 @@ public class SecondVar {
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
         calculateButton.addActionListener(e -> {
-            int epsilon = (int) Double.parseDouble(accurance.getText());
-            double min = Double.parseDouble(start.getText());
-            double max = Double.parseDouble(end.getText());
-            double s = Double.parseDouble(step.getText());
+            double epsilon, min, max, s;
+
+            try {
+                // Попытка преобразования введенных значений в числа
+                epsilon = Math.pow(10, -Double.parseDouble(accurance.getText()));
+                min = Double.parseDouble(start.getText());
+                max = Double.parseDouble(end.getText());
+                s = Double.parseDouble(step.getText());
+            } catch (NumberFormatException ex) {
+                // Обработка случая, когда ввод не является числом
+                JOptionPane.showMessageDialog(null, "Пожалуйста, введите корректные числа!", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+                start.setText("");
+                end.setText("");
+                step.setText("");
+                accurance.setText("");
+                return; // Завершаем выполнение, если ввод некорректен
+            }
 
             if (min <= -1) {
-                min = -0.999;
-                start.setText("-0.999");
+                min = -0.9;
+                start.setText("-0.9");
             }
 
             if (max >= 1) {
-                max = 0.999;
-                end.setText("0.999");
+                max = 0.9;
+                end.setText("0.9");
             }
 
             if (s >= 1) {
@@ -62,8 +75,9 @@ public class SecondVar {
 
 
             for (double x = min; x <= max; x += s) {
-                double res = calculateFunctionValue(x, epsilon);
-                double referenceResult = calculateReferenceValue(x);
+                Calculate calc = new Calculate(x, epsilon);
+                double res = calc.calculateFunctionValue();
+                double referenceResult = calc.calculateReferenceValue();
                 tableModel.addRow(new Object[]{x, String.valueOf(referenceResult), String.valueOf(res)});
             }
 
@@ -90,36 +104,6 @@ public class SecondVar {
         inputPanel.add(accurance);
 
         contentPane.add(inputPanel, BorderLayout.NORTH);
-    }
-
-    private static double calculateReferenceValue(double x) {
-        return Math.sqrt(1 + x);
-    }
-
-    public static double getFactorial(int f) {
-        double result = 1;
-        for (int i = 1; i <= f; i++) {
-            result *= i;
-        }
-        return result;
-    }
-
-    static double macloren(int n, double x) {
-        return (Math.pow(-1, n) * getFactorial(2 * n) * Math.pow(x, n) / ((1 - 2 * n) * Math.pow(getFactorial(n), 2) * Math.pow(4, n)));
-    }
-
-    public static double calculateFunctionValue(double x, double epsilon) {
-        double resultM = 0;
-        int N = 0;
-        double fx = macloren(N, x);
-        resultM += fx;
-        while (Math.abs(fx) > Math.pow(10, -epsilon)) {
-            N++;
-            fx = macloren(N, x);
-            resultM += fx;
-        }
-
-        return resultM;
     }
 
 }

@@ -19,16 +19,48 @@ public class FirstVar {
 
 
     public FirstVar() {
+
+
         // Настройка элементов интерфейса
         claculationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String inputText = valueX.getText();
+                double xValue;
+
+                try {
+                    // Попытка преобразования введенного текста в число
+                    xValue = Double.parseDouble(inputText);
+
+                    // Проверка на диапазон
+                    if (xValue >= 1) {
+                        valueX.setText("0.9");
+                        return; // Завершаем выполнение, если значение вне диапазона
+                    }
+                    if (xValue <= -1) {
+                        valueX.setText("-0.9");
+                        return; // Завершаем выполнение, если значение вне диапазона
+                    }
+
+                } catch (NumberFormatException ex) {
+                    // Обработка случая, когда ввод не является числом
+                    JOptionPane.showMessageDialog(null, "Пожалуйста, введите корректное число!", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+                    valueX.setText(""); // Очистка поля ввода
+                    return; // Завершаем выполнение
+                }
+
                 Accured selectedAccured = (Accured) accuranceValue.getSelectedItem();
                 assert selectedAccured != null;
-                double returnRef = calculateReferenceValue(Double.parseDouble(valueX.getText()));
-                referenceValue.setText(String.valueOf(returnRef));
-                double res = calculateFunctionValue(Double.parseDouble(valueX.getText()), selectedAccured.getPrecision());
+                //double returnRef = calculateReferenceValue(Double.parseDouble(valueX.getText()));
+                //referenceValue.setText(String.valueOf(returnRef));
+                //double res = calculateFunctionValue(Double.parseDouble(valueX.getText()), selectedAccured.getPrecision());
+                //maclaurinRow.setText(String.valueOf(res));
+                Calculate calc = new Calculate(Double.parseDouble(valueX.getText()), selectedAccured.getPrecision());
+                double referenceV = calc.calculateReferenceValue();
+                referenceValue.setText(String.valueOf(referenceV));
+                double res = calc.calculateFunctionValue();
                 maclaurinRow.setText(String.valueOf(res));
+
             }
         });
 
@@ -73,61 +105,5 @@ public class FirstVar {
         for (Accured a : Accured.values()) {
             comboBoxModel.addElement(a);
         }
-    }
-
-    private double calculateReferenceValue(double x) {
-        double result = 0;
-        if (x <= 1 && x >= -1) {
-            result = Math.sqrt(1 + x);
-        } else {
-            result = -1;
-        }
-        return result;
-    }
-
-
-    public static double getFactorial(int f) {
-        double result = 1;
-
-        for (int i = 1; i <= f; i++) {
-            result = result * i;
-        }
-        return result;
-    }
-
-
-    public static double getPow(double x, int y) {
-        double res = 1;
-        for (int i = 1; i <= y; i++) {
-            res *= x;
-        }
-        return res;
-    }
-
-    static double maclorenNumerator(int n) {
-        return (getPow(-1, n) * getFactorial(2 * n));
-    }
-
-    static double maclorenDenominator(int n) {
-        return (1 - 2 * n) * getPow(getFactorial(n), 2) * getPow(4, n);
-    }
-
-    static double macloren(int n, double x) {
-        return (maclorenNumerator(n) / maclorenDenominator(n)) * getPow(x, n);
-    }
-
-    public static double calculateFunctionValue(double x, double epsilon) {
-        double result = 0;
-        int n = 0;
-        double fx;
-
-        do {
-            fx = macloren(n, x);
-            result += fx;
-            n++;
-            //System.out.println("n: " + n + ", term: " + fx + ", result: " + result);
-        } while (Math.abs(fx) > epsilon);
-
-        return result;
     }
 }
