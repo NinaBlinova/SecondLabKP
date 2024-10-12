@@ -71,6 +71,7 @@ public class FirstVar {
                 valueX.setText("");
                 maclaurinRow.setText("");
                 referenceValue.setText("");
+                accuranceValue.setSelectedItem(null);
             }
         });
 
